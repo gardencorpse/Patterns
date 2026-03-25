@@ -1,17 +1,20 @@
 using UnityEngine;
 using Zenject;
 
-public class CameraFollower : MonoBehaviour
+public class CameraFollower : ILateTickable
 {
-    [Inject]
-    private Camera _targetCamera;
-    [Inject]
-    private ICharacter character;
+    private readonly Camera _targetCamera;
+    private readonly ICharacter character;
+    private readonly Vector3 _offset;
 
-    [SerializeField]
-    private Vector3 _offset;
+    public CameraFollower(Camera camera, ICharacter character, Vector3 offset)
+    {
+        this.character = character;
+        this._targetCamera = camera;
+        this._offset = offset;
+    }
 
-    private void LateUpdate()
+    void ILateTickable.LateTick()
     {
         var cameraPosition = this.character.GetPosition() + this._offset;
         this._targetCamera.transform.position = cameraPosition;

@@ -4,7 +4,10 @@ using Zenject;
 public class SceneInstaller : MonoInstaller
 {
     [SerializeField]
-    private Character character;
+    private Vector3 cameraOffset = new Vector3(0, 3, -12);
+
+    [SerializeField]
+    private Character characterPrefab;
 
     [SerializeField]
     private MoveInput moveInput;
@@ -17,7 +20,7 @@ public class SceneInstaller : MonoInstaller
         this.Container
             .Bind<ICharacter>()
             .To<Character>()
-            .FromInstance(this.character)
+            .FromComponentInNewPrefab(this.characterPrefab)
             .AsSingle();
 
         this.Container
@@ -25,6 +28,26 @@ public class SceneInstaller : MonoInstaller
             .To<MoveInput>()
             .AsSingle();
 
-        this .Container.Bind<Camera>().FromInstance(this.camera).AsSingle();
+        this.Container
+            .Bind<Camera>()
+            .FromInstance(this.camera)
+            .AsSingle();
+
+        this.Container
+            .Bind<GameManager>()
+            .AsSingle();
+
+        this.Container
+            .BindInterfacesTo<DeathObserver>()
+            .AsCached();
+
+        this.Container
+            .BindInterfacesAndSelfTo<MoveController>()
+            .AsCached();
+
+        this.Container
+            .BindInterfacesTo<CameraFollower>()
+            .AsCached()
+            .WithArguments(this.cameraOffset);
     }
 }
